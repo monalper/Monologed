@@ -52,11 +52,15 @@ const PORT = process.env.PORT || 5000;
 
 // --- Middleware ---
 // Enable CORS for requests from the frontend development server
+const allowedOrigins = [
+  'https://monologed.vercel.app',
+  'https://monologed-rho.vercel.app',
+  'http://localhost:5173',
+  'https://monologed-frontend.onrender.com'
+];
 app.use(cors({
-    origin: ['http://localhost:5173', 'https://monologed.com', 'https://www.monologed.com', 'https://monologed-frontend.vercel.app', 'https://monologed.vercel.app'],
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
+  origin: allowedOrigins,
+  credentials: true
 }));
 // Parse incoming JSON request bodies
 app.use(express.json());
