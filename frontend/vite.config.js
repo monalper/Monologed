@@ -10,7 +10,7 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          ui: ['react-icons', 'react-beautiful-dnd'],
+          ui: ['react-icons', '@hello-pangea/dnd'],
           utils: ['axios', 'date-fns', 'i18next']
         }
       }
