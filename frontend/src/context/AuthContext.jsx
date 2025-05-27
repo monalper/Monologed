@@ -1,6 +1,6 @@
 // src/context/AuthContext.jsx
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios'; // Profil bilgisini çekmek ve varsayılan header ayarlamak için
+import api from '../utils/api';
 
 // 1. Context'i oluştur
 const AuthContext = createContext(null);
@@ -18,24 +18,19 @@ export const AuthProvider = ({ children }) => {
             if (storedToken) {
                 console.log("AuthContext: localStorage'da token bulundu, doğrulanıyor...");
                 try {
-                    axios.defaults.headers.common['Authorization'] = `Bearer ${storedToken}`;
                     // Backend'den kullanıcı profilini çek (isVerified dahil)
-                    const response = await axios.get('http://localhost:5000/api/users/profile');
-
-                    // setUser tüm kullanıcı verisini (isVerified dahil) kaydeder
-                    setUser(response.data); // <<< Bu satır isVerified'ı da alır
+                    const response = await api.get('/api/users/profile');
+                    setUser(response.data);
                     setToken(storedToken);
                     console.log("AuthContext: Token doğrulandı, kullanıcı bilgisi:", response.data);
                 } catch (error) {
                     console.error("AuthContext: Token doğrulama hatası veya geçersiz token:", error.response?.data?.message || error.message);
                     localStorage.removeItem('authToken');
-                    delete axios.defaults.headers.common['Authorization'];
                     setToken(null);
                     setUser(null);
                 }
             } else {
                 console.log("AuthContext: localStorage'da token bulunamadı.");
-                 delete axios.defaults.headers.common['Authorization'];
             }
             setIsLoading(false);
         };
@@ -47,8 +42,6 @@ export const AuthProvider = ({ children }) => {
     const login = (newToken, userData) => {
         console.log("AuthContext: Login işlemi yapılıyor...");
         localStorage.setItem('authToken', newToken);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-        // setUser tüm kullanıcı verisini (isVerified dahil) kaydeder
         setUser(userData); // <<< Bu satır isVerified'ı da alır
         setToken(newToken);
         console.log("AuthContext: Token kaydedildi, kullanıcı ayarlandı:", userData);
@@ -58,7 +51,6 @@ export const AuthProvider = ({ children }) => {
     const logout = () => {
         console.log("AuthContext: Logout işlemi yapılıyor...");
         localStorage.removeItem('authToken');
-        delete axios.defaults.headers.common['Authorization'];
         setToken(null);
         setUser(null);
         console.log("AuthContext: Token silindi, kullanıcı null yapıldı.");
