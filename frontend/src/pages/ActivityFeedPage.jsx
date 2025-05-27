@@ -1,6 +1,5 @@
 // frontend/src/pages/ActivityFeedPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
-import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import LogItem from '../components/LogItem';
 import PostItem from '../components/PostItem';
@@ -9,6 +8,7 @@ import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { FaSpinner, FaInfoCircle } from 'react-icons/fa';
 import { useRef } from 'react';
+import api from '../utils/api';
 
 function ActivityFeedPage() {
     const { t } = useTranslation();
@@ -30,9 +30,7 @@ function ActivityFeedPage() {
         }
         // setLoading(true); // Yeniden yüklerken spinner göstermek için
         try {
-            const response = await axios.get('/api/feed', {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            const response = await api.get('/api/feed');
             const itemsWithPostType = (response.data.feed || []).map(item => ({
                 ...item,
                 postType: item.postType || 'log'
@@ -82,7 +80,7 @@ function ActivityFeedPage() {
             setFeaturedLoading(true);
             setFeaturedError(null);
             try {
-                const res = await axios.get('/api/main/featured');
+                const res = await api.get('/api/main/featured');
                 setFeatured(res.data.items || []);
             } catch (err) {
                 setFeaturedError('Trend içerikler yüklenemedi.');

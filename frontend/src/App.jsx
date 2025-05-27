@@ -5,6 +5,7 @@ import { useAuth } from './context/AuthContext';
 import axios from 'axios';
 import './App.css';
 import { useTranslation } from 'react-i18next';
+import api from './utils/api';
 
 // Sayfaları ve Bileşenleri import et
 import HomePage from './pages/HomePage';
@@ -253,9 +254,7 @@ function App() {
   const fetchUnreadCount = useCallback(async () => {
     if (!token) return;
     try {
-        const response = await axios.get('/api/notifications/unread-count', {
-            headers: { Authorization: `Bearer ${token}` }
-        });
+      const response = await api.get('/api/notifications/unread-count');
       setUnreadCount(response.data.unreadCount || 0);
       setNotificationsError(null);
     } catch (error) {

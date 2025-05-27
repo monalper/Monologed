@@ -1,7 +1,7 @@
 // src/pages/SeasonDetailPage.jsx
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import StarRating from '../components/StarRating';
 import LogEntryModal from '../components/LogEntryModal';
@@ -41,11 +41,10 @@ function SeasonDetailPage() {
 
         if (!tvId || !seasonNumber) { setError(t('season_page_error_missing_info')); setLoading(false); setLogsLoading(false); return; }
 
-        const apiPrefix = '/api';
-        const fetchSeasonAndEpisodesPromise = axios.get(`${apiPrefix}/tv/${tvId}/season/${seasonNumber}/episodes`);
-        const fetchTvInfoPromise = axios.get(`${apiPrefix}/tv/${tvId}?language=en-US`); // Ana dizi adı İngilizce
+        const fetchSeasonAndEpisodesPromise = api.get(`/api/tv/${tvId}/season/${seasonNumber}/episodes`);
+        const fetchTvInfoPromise = api.get(`/api/tv/${tvId}?language=en-US`); // Ana dizi adı İngilizce
         let fetchLogsPromise = Promise.resolve({ data: { logs: [] } });
-        if (token) { fetchLogsPromise = axios.get(`${apiPrefix}/logs`, { params: { contentId: tvId, contentType: 'tv' }, headers: { Authorization: `Bearer ${token}` } }); } // Token ekle
+        if (token) { fetchLogsPromise = api.get(`/api/logs`, { params: { contentId: tvId, contentType: 'tv' } }); }
 
         try {
             const [seasonRes, tvRes, logRes] = await Promise.allSettled([
@@ -85,7 +84,7 @@ function SeasonDetailPage() {
         if (!token || markingEpisode) return;
         setMarkingEpisode({ episode_number: episodeNum });
         try {
-            await axios.post('/api/logs', {
+            await api.post('/api/logs', {
                 contentId: Number(tvId), contentType: 'tv',
                 watchedDate: new Date().toISOString().split('T')[0],
                 seasonNumber: Number(seasonNumber), episodeNumber: episodeNum,

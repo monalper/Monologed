@@ -1,10 +1,10 @@
 // src/components/HomepageHero.jsx
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import axios from 'axios';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useTranslation } from 'react-i18next'; // *** useTranslation import edildi ***
+import { useTranslation } from 'react-i18next';
 import { FaInfoCircle, FaSpinner, FaPlay, FaCalendarAlt, FaFilm, FaTv, FaStar, FaClock, FaRegClock } from 'react-icons/fa';
+import api from '../utils/api';
 
 // Sabitler
 const BACKDROP_BASE_URL = 'https://image.tmdb.org/t/p/w1280';
@@ -14,7 +14,7 @@ const PLACEHOLDER_POSTER = 'https://via.placeholder.com/500x750.png?text=Poster+
 const SLIDESHOW_INTERVAL = 10000; // 10 saniye
 
 function HomepageHero() {
-    const { t } = useTranslation(); // *** t fonksiyonu alındı ***
+    const { t } = useTranslation();
     const [featuredItems, setFeaturedItems] = useState([]);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [loading, setLoading] = useState(true);
@@ -35,7 +35,7 @@ function HomepageHero() {
         const fetchFeatured = async () => {
             setLoading(true); setError(null); setFeaturedItems([]); setCurrentIndex(0);
             try {
-                const response = await axios.get('/api/main/featured');
+                const response = await api.get('/api/main/featured');
                 if (response.data && Array.isArray(response.data.items)) {
                     setFeaturedItems(response.data.items);
                 } else { setFeaturedItems([]); }
@@ -56,9 +56,7 @@ function HomepageHero() {
         }
         setWatchlistStatusLoading(true); setWatchlistActionError(null);
         try {
-            const response = await axios.get(`/api/watchlist/status/${currentItem.media_type}/${currentItem.id}`, {
-                headers: { Authorization: `Bearer ${token}` } // Token ekle
-            });
+            const response = await api.get(`/api/watchlist/status/${currentItem.media_type}/${currentItem.id}`);
             setIsInWatchlist(response.data.isInWatchlist);
             setWatchlistItemId(response.data.itemId || null);
         } catch (error) {
@@ -89,25 +87,23 @@ function HomepageHero() {
         if (!token || !currentItem?.id || !currentItem?.media_type || isTogglingWatchlist || watchlistStatusLoading) return;
         setIsTogglingWatchlist(true); setWatchlistActionError(null);
         const currentStatus = isInWatchlist; const currentItemId = watchlistItemId;
-        const apiPrefix = '/api';
         try {
-            const headers = { Authorization: `Bearer ${token}` }; // Token'ı hazırla
             if (currentStatus && currentItemId) {
-                await axios.delete(`${apiPrefix}/watchlist/${currentItemId}`, { headers });
+                await api.delete(`/api/watchlist/${currentItemId}`);
                 setIsInWatchlist(false); setWatchlistItemId(null);
             } else if (!currentStatus) {
-                const response = await axios.post(`${apiPrefix}/watchlist`, {
+                const response = await api.post(`/api/watchlist`, {
                     contentId: currentItem.id, contentType: currentItem.media_type
-                }, { headers });
+                });
                 setIsInWatchlist(true); setWatchlistItemId(response.data.item?.itemId || response.data.itemId || null);
             }
         } catch (error) {
             console.error("Hero Watchlist Toggle Error:", error.response?.data || error.message);
-            setWatchlistActionError(t('hero_watchlist_error')); // *** Çeviri kullanıldı ***
+            setWatchlistActionError(t('hero_watchlist_error'));
             setIsInWatchlist(currentStatus); setWatchlistItemId(currentItemId);
             setTimeout(() => setWatchlistActionError(null), 3000);
         } finally { setIsTogglingWatchlist(false); }
-    }, [token, currentItem?.id, currentItem?.media_type, isInWatchlist, watchlistItemId, isTogglingWatchlist, watchlistStatusLoading, t]); // t eklendi
+    }, [token, currentItem?.id, currentItem?.media_type, isInWatchlist, watchlistItemId, isTogglingWatchlist, watchlistStatusLoading, t]);
 
     // Yüklenme, Hata, Boş Liste Durumları
     if (loading) { /* ... iskelet görünümü ... */

@@ -6,6 +6,7 @@ import { useAuth } from '../context/AuthContext'; // Token gerekebilir (eğer li
 import { useTranslation } from 'react-i18next';
 import { FaSpinner, FaInfoCircle, FaUserCircle, FaFilm, FaTv, FaExternalLinkAlt } from 'react-icons/fa';
 import PageLayout from '../components/PageLayout'; // PageLayout'u import ediyoruz
+import api from '../utils/api';
 
 // Sabitler
 const COVER_IMAGE_PLACEHOLDER = 'https://via.placeholder.com/1280x400.png?text=Liste+Kapak+Resmi';
@@ -89,7 +90,7 @@ function EditorialListPage() {
                             ? `/api/movies/${item.id}`
                             : `/api/tv/${item.id}`;
                         // Bu endpoint'ler public olduğu için token gerekmeyebilir.
-                        return axios.get(detailUrl)
+                        return api.get(detailUrl)
                              .then(res => ({ ...res.data, type: item.type }))
                              .catch(err => {
                                  console.error(`İçerik detayı çekme hatası (${item.type}/${item.id}):`, err.response?.data || err.message);

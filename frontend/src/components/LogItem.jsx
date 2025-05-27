@@ -12,6 +12,7 @@ import StarRating from './StarRating';
 import { formatDistanceToNow } from 'date-fns';
 import { tr, enUS } from 'date-fns/locale';
 import { useTranslation } from 'react-i18next';
+import api from '../utils/api';
 
 const IMAGE_BASE_URL_W185 = 'https://image.tmdb.org/t/p/w185';
 const PLACEHOLDER_IMAGE_W185 = 'https://via.placeholder.com/185x278.png?text=N/A';
@@ -59,14 +60,14 @@ function LogItem({ log, isPinned, onPin, onUnpin, isOwnProfile, onDelete }) {
              const checkStatus = async () => {
                  setLikeStatusLoading(true);
                  try {
-                     const response = await axios.get(`/api/logs/${log.logId}/like/status`, { headers: { Authorization: `Bearer ${token}` } });
+                     const response = await api.get(`/api/logs/${log.logId}/like/status`);
                       if (isMounted) setIsLiked(response.data.isLiked);
                  } catch (err) { console.error("Like status check error:", err); if (isMounted) setIsLiked(false); }
                  finally { if (isMounted) setLikeStatusLoading(false); }
              };
               const fetchLikeCount = async () => {
                   try {
-                      const response = await axios.get(`/api/logs/${log.logId}/likes`);
+                      const response = await api.get(`/api/logs/${log.logId}/likes`);
                       if (isMounted) setLikeCount(response.data.likeCount || 0);
                   } catch(err) {
                       console.error("Like count fetch error:", err);

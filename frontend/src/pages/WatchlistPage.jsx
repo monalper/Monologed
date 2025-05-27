@@ -1,6 +1,6 @@
 // src/pages/WatchlistPage.jsx
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import { Link } from 'react-router-dom';
 import { FaListUl, FaInfoCircle, FaSpinner, FaEye, FaRegEye, FaClock, FaRegClock, FaPlayCircle } from 'react-icons/fa';
@@ -28,9 +28,7 @@ function WatchlistPage() {
                 setError(null);
                 setWatchlistItems([]);
                 try {
-                    const response = await axios.get('/api/watchlist', {
-                        headers: { Authorization: `Bearer ${token}` }
-                    });
+                    const response = await api.get('/api/watchlist');
                     setWatchlistItems(response.data.watchlist || []);
                 } catch (error) {
                     console.error("Watchlist çekme hatası (WatchlistPage):", error.response?.data || error.message);
@@ -61,7 +59,7 @@ function WatchlistPage() {
             for (const item of watchlistItems) {
                 try {
                     const endpoint = item.contentType === 'movie' ? `/api/movies/${item.contentId}` : `/api/tv/${item.contentId}`;
-                    const response = await axios.get(endpoint);
+                    const response = await api.get(endpoint);
                     details[item.itemId] = response.data;
                 } catch (error) {
                     console.error(`İçerik detayı çekme hatası (${item.contentType}/${item.contentId}):`, error);
@@ -81,9 +79,8 @@ function WatchlistPage() {
             const logs = {};
             for (const item of watchlistItems) {
                 try {
-                    const response = await axios.get(`/api/logs`, {
-                        params: { contentId: item.contentId, contentType: item.contentType },
-                        headers: { Authorization: `Bearer ${token}` }
+                    const response = await api.get(`/api/logs`, {
+                        params: { contentId: item.contentId, contentType: item.contentType }
                     });
                     logs[item.itemId] = response.data.logs || [];
                 } catch (error) {
@@ -110,20 +107,16 @@ function WatchlistPage() {
 
         try {
             if (generalLog) {
-                await axios.delete(`/api/logs/${generalLog.logId}`, {
-                    headers: { Authorization: `Bearer ${token}` }
-                });
+                await api.delete(`/api/logs/${generalLog.logId}`);
                 setUserLogs(prev => ({
                     ...prev,
                     [itemId]: logs.filter(log => log.logId !== generalLog.logId)
                 }));
             } else {
-                const response = await axios.post(`/api/logs`, {
+                const response = await api.post(`/api/logs`, {
                     contentId,
                     contentType,
                     watchedDate: new Date().toISOString().split('T')[0]
-                }, {
-                    headers: { Authorization: `Bearer ${token}` }
                 });
                 setUserLogs(prev => ({
                     ...prev,
@@ -142,9 +135,7 @@ function WatchlistPage() {
 
         setIsTogglingWatchlist(prev => ({ ...prev, [itemId]: true }));
         try {
-            await axios.delete(`/api/watchlist/${itemId}`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            await api.delete(`/api/watchlist/${itemId}`);
             setWatchlistItems(prevItems => prevItems.filter(item => item.itemId !== itemId));
             setContentDetails(prev => {
                 const newDetails = { ...prev };

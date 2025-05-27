@@ -1,7 +1,7 @@
 // frontend/src/pages/PublicProfilePage.jsx
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import LogItem from '../components/LogItem';
 import PostItem from '../components/PostItem';
@@ -47,7 +47,7 @@ const useFetchWatchlistPosters = (watchlistItems) => {
                 const posterPromises = itemsToFetch.map(item => {
                     if (!item.contentId || !item.contentType) return Promise.resolve(null);
                     const detailUrl = item.contentType === 'movie' ? `/api/movies/${item.contentId}` : `/api/tv/${item.contentId}`;
-                    return axios.get(detailUrl, { params: { language: 'en-US', append_to_response: '' } })
+                    return api.get(detailUrl, { params: { language: 'en-US', append_to_response: '' } })
                         .then(res => res.data?.poster_path || null)
                         .catch(err => { console.warn(`PublicProfile: Watchlist poster çekme hatası (${item.contentType}/${item.contentId}):`, err.message); return null; });
                 });
@@ -120,13 +120,11 @@ function PublicProfilePage() {
 
             try {
                 const [profileRes, followersRes, followingRes, followStatusRes] = await Promise.allSettled([
-                    axios.get(`/api/users/public/${profileUserId}`),
-                    axios.get(`/api/users/${profileUserId}/followers`),
-                    axios.get(`/api/users/${profileUserId}/following`),
+                    api.get(`/api/users/public/${profileUserId}`),
+                    api.get(`/api/users/${profileUserId}/followers`),
+                    api.get(`/api/users/${profileUserId}/following`),
                     token && !isOwnProfile 
-                        ? axios.get(`/api/follow/status/${profileUserId}`, { 
-                            headers: { Authorization: `Bearer ${token}` } 
-                        })
+                        ? api.get(`/api/follow/status/${profileUserId}`)
                         : Promise.resolve({ data: { isFollowing: false } })
                 ]);
 
@@ -176,7 +174,7 @@ function PublicProfilePage() {
             }
 
                 try {
-                    const response = await axios.get(`/api/logs/user/${profileUserId}`);
+                    const response = await api.get(`/api/logs/user/${profileUserId}`);
                     const itemsWithPostType = (response.data.logs || []).map(item => ({
                         ...item,
                         postType: item.postType || 'log'
@@ -203,7 +201,7 @@ function PublicProfilePage() {
             }
 
             try {
-                const response = await axios.get(`/api/achievements/user/${profileUserId}`, {
+                const response = await api.get(`/api/achievements/user/${profileUserId}`, {
                     validateStatus: function (status) {
                         return status < 500; // 500'den küçük tüm status kodlarını kabul et
                     }
@@ -236,7 +234,7 @@ function PublicProfilePage() {
             }
 
             try {
-                const response = await axios.get(`/api/lists/user/${profileUserId}`);
+                const response = await api.get(`/api/lists/user/${profileUserId}`);
                 setLists(response.data.lists || []);
             } catch (err) {
                 console.error("PublicProfilePage Lists Error:", err);
@@ -259,7 +257,7 @@ function PublicProfilePage() {
             }
 
             try {
-                const response = await axios.get(`/api/watchlist/user/${profileUserId}`);
+                const response = await api.get(`/api/watchlist/user/${profileUserId}`);
                 setWatchlistItems(response.data.watchlist || []);
             } catch (err) {
                 console.error("PublicProfilePage Watchlist Error:", err);
@@ -282,7 +280,7 @@ function PublicProfilePage() {
             }
 
             try {
-                const response = await axios.get(`/api/users/${profileUserId}/stats`);
+                const response = await api.get(`/api/users/${profileUserId}/stats`);
                 setProfileStats(response.data || null);
             } catch (err) {
                 console.error("PublicProfilePage Stats Error:", err);
@@ -301,7 +299,7 @@ function PublicProfilePage() {
         if (!token || !postId) return;
         
         try {
-            await axios.delete(`/api/posts/${postId}`, {
+            await api.delete(`/api/posts/${postId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             
@@ -321,7 +319,7 @@ function PublicProfilePage() {
     const handlePinLog = async (logId) => {
         if (!isOwnProfile || !token) return;
         try {
-            await axios.post(`/api/users/${profileUserId}/pin`, { logId }, { headers: { Authorization: `Bearer ${token}` } });
+            await api.post(`/api/users/${profileUserId}/pin`, { logId }, { headers: { Authorization: `Bearer ${token}` } });
             setProfileUser(prev => ({ ...prev, pinnedLogId: logId }));
         } catch (err) {
             alert('Pinleme işlemi başarısız.');
@@ -330,7 +328,7 @@ function PublicProfilePage() {
     const handleUnpinLog = async () => {
         if (!isOwnProfile || !token) return;
         try {
-            await axios.post(`/api/users/${profileUserId}/pin`, { logId: null }, { headers: { Authorization: `Bearer ${token}` } });
+            await api.post(`/api/users/${profileUserId}/pin`, { logId: null }, { headers: { Authorization: `Bearer ${token}` } });
             setProfileUser(prev => ({ ...prev, pinnedLogId: null }));
         } catch (err) {
             alert('Sabit kaldırma işlemi başarısız.');
@@ -351,7 +349,7 @@ function PublicProfilePage() {
         );
 
         try {
-            const response = await axios.post(`/api/follow/toggle/${profileUserId}`, null, {
+            const response = await api.post(`/api/follow/toggle/${profileUserId}`, null, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.status === 200 && typeof response.data.isFollowing === 'boolean') {

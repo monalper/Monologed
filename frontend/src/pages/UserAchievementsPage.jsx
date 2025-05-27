@@ -1,7 +1,7 @@
 // src/pages/UserAchievementsPage.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { useAuth } from '../context/AuthContext';
 import Badge from '../components/Badge'; // Mevcut Badge bileşenini kullanıyoruz
 import { FaAward, FaSpinner, FaInfoCircle, FaArrowLeft, FaExclamationCircle, FaUserCircle, FaCheckCircle } from 'react-icons/fa';
@@ -51,8 +51,8 @@ const UserAchievementsPage = () => {
 
                 // Fetch profile data and achievements
                 const [profileRes, achievementsRes] = await Promise.all([
-                    axios.get(`/api/users/public/${profileUserId}`),
-                    axios.get(`/api/users/${profileUserId}/achievements`)
+                    api.get(`/api/users/public/${profileUserId}`),
+                    api.get(`/api/users/${profileUserId}/achievements`)
                 ]);
 
                 setProfileUser(profileRes.data.user);

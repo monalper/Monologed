@@ -1,7 +1,7 @@
 // src/pages/PublicUserStatsPage.jsx
 import React, { useState, useEffect, useMemo } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import api from '../utils/api';
 import { FaSpinner, FaExclamationCircle, FaChartBar, FaFilm, FaTv, FaHourglassHalf, FaArrowLeft, FaUserCircle, FaCheckCircle, FaStar, FaRegStar, FaStarHalfAlt, FaCalendarAlt } from 'react-icons/fa'; // Yeni ikonlar
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -93,8 +93,8 @@ const PublicUserStatsPage = () => {
 
                 // Fetch profile data and stats
                 const [profileRes, statsRes] = await Promise.all([
-                    axios.get(`/api/users/public/${profileUserId}`),
-                    axios.get(`/api/users/${profileUserId}/stats`)
+                    api.get(`/api/users/public/${profileUserId}`),
+                    api.get(`/api/users/${profileUserId}/stats`)
                 ]);
 
                 setProfileUser(profileRes.data.user);

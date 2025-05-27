@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
-import axios from 'axios';
 import { FaSpinner, FaInfoCircle, FaEye, FaRegEye, FaPlayCircle, FaClock } from 'react-icons/fa';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import api from '../utils/api';
 
 // Sabitler
 const IMAGE_BASE_URL_W342 = 'https://image.tmdb.org/t/p/w342';
@@ -28,7 +28,7 @@ function WatchlistPreviewPage() {
             setError(null);
             setWatchlistItems([]);
             try {
-                const response = await axios.get(`/api/watchlist/${username}`);
+                const response = await api.get(`/api/watchlist/${username}`);
                 setWatchlistItems(response.data.watchlist || []);
             } catch (error) {
                 console.error("Watchlist çekme hatası (WatchlistPreviewPage):", error.response?.data || error.message);
@@ -54,7 +54,7 @@ function WatchlistPreviewPage() {
             for (const item of watchlistItems) {
                 try {
                     const endpoint = item.contentType === 'movie' ? `/api/movies/${item.contentId}` : `/api/tv/${item.contentId}`;
-                    const response = await axios.get(endpoint);
+                    const response = await api.get(endpoint);
                     details[item.itemId] = response.data;
                 } catch (error) {
                     console.error(`İçerik detayı çekme hatası (${item.contentType}/${item.contentId}):`, error);
@@ -74,7 +74,7 @@ function WatchlistPreviewPage() {
             const logs = {};
             for (const item of watchlistItems) {
                 try {
-                    const response = await axios.get(`/api/logs`, {
+                    const response = await api.get(`/api/logs`, {
                         params: { contentId: item.contentId, contentType: item.contentType },
                         headers: { Authorization: `Bearer ${token}` }
                     });
@@ -103,7 +103,7 @@ function WatchlistPreviewPage() {
 
         try {
             if (generalLog) {
-                await axios.delete(`/api/logs/${generalLog.logId}`, {
+                await api.delete(`/api/logs/${generalLog.logId}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 setUserLogs(prev => ({
@@ -111,7 +111,7 @@ function WatchlistPreviewPage() {
                     [itemId]: logs.filter(log => log.logId !== generalLog.logId)
                 }));
             } else {
-                const response = await axios.post(`/api/logs`, {
+                const response = await api.post(`/api/logs`, {
                     contentId,
                     contentType,
                     watchedDate: new Date().toISOString().split('T')[0]
@@ -135,7 +135,7 @@ function WatchlistPreviewPage() {
 
         setIsTogglingWatchlist(prev => ({ ...prev, [itemId]: true }));
         try {
-            await axios.post('/api/watchlist', {
+            await api.post('/api/watchlist', {
                 contentId,
                 contentType
             }, {
