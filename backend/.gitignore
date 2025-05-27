@@ -1,0 +1,16 @@
+# .gitignore dosyası
+
+# Bağımlılıklar klasörü
+node_modules
+
+# Ortam değişkenleri dosyası
+.env
+
+# İşletim sistemi dosyaları
+.DS_Store
+Thumbs.db
+
+# Log dosyaları
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

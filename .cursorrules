@@ -1,0 +1,44 @@
+# .cursorrules
+
+[project]
+name = "Monologed"
+description = """
+Monologed, kullanıcıların izledikleri film ve dizileri kaydedebildiği, değerlendirebildiği,
+yorumlayabildiği ve bu içerikler üzerinden sosyal etkileşimde bulunabildiği bir sosyal medya ve
+içerik takibi platformudur. Letterboxd, Trakt.tv ve IMDb'den ilham alınmıştır.
+Kullanıcı tercihlerini analiz ederek kişiselleştirilmiş deneyimler sunmayı amaçlar.
+"""
+tech_stack = [
+  "React", "Vite", "Tailwind CSS", "React Router", "i18next", "Context API",
+  "Node.js", "Express.js", "DynamoDB", "AWS S3", "JWT", "Bcrypt", "Multer"
+]
+
+[code_style]
+frontend_framework = "React"
+state_management = "Context API"
+styling = "Tailwind CSS"
+i18n = true
+routing = "React Router"
+typescript = false
+
+[ai_usage]
+tone = "Profesyonel, ileri görüşlü ve kod bütünlüğüne duyarlı"
+permissions = [
+  "refactor (mevcut davranışı bozmadan iyileştirme)",
+  "kodun amacını açıklama",
+  "geliştirici deneyimini artıracak sadeleştirmeler önerme"
+]
+restrictions = [
+  "mevcut işlevselliği değiştirecek büyük müdahaleler yapma",
+  "veritabanı yapısını veya API endpointlerini izinsiz değiştirme",
+  "bütünsel yapıyı bozan değişiklikler yapma",
+  "karmaşık state yapıları ekleme"
+]
+prioritize = [
+  "kodu okunabilir ve sürdürülebilir tutmak",
+  "component-based mimariyi korumak",
+  "veri güvenliği ve performans",
+  "mevcut yapıya uyumlu geliştirme yapmak"
+]
+
+(Her cevabı Türkçe ver.)

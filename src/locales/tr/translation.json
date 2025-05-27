@@ -1,0 +1,15 @@
+{
+  "watchlist": {
+    "title": "{{username}}'in İzleme Listesi",
+    "empty": "İzleme listesinde henüz içerik bulunmuyor.",
+    "add": "İzleme Listesine Ekle",
+    "remove": "İzleme Listesinden Çıkar"
+  },
+  "userWatchlist": {
+    "title": "{{username}}'in İzleme Listesi",
+    "stats": "{{username}}'in izleme listesinde {{count}} içerik bulunuyor",
+    "empty": "{{username}}'in izleme listesinde henüz içerik bulunmuyor",
+    "editMyList": "Listemi Düzenle"
+  },
+  "error_fetching_watchlist": "İzleme listesi yüklenirken bir hata oluştu"
+} 
