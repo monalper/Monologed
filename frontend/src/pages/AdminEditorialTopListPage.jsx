@@ -3,7 +3,7 @@ import axios from 'axios';
 import { FaPlus, FaSearch, FaArrowUp, FaArrowDown, FaTrash, FaSave, FaSpinner, FaTimes } from 'react-icons/fa';
 import { FaCheckCircle } from 'react-icons/fa';
 import TopCard from '../components/TopCard';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 
 const SUGGESTION_POSTER_BASE_URL = 'https://image.tmdb.org/t/p/w92';
 const PLACEHOLDER_SUGGESTION_POSTER = 'https://via.placeholder.com/92x138.png?text=N/A';
