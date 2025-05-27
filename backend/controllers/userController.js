@@ -1,5 +1,5 @@
 // backend/controllers/userController.js
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 // Gerekli AWS SDK komutları import ediliyor (QueryCommand zaten vardı, tekrar eklemeye gerek yok)
